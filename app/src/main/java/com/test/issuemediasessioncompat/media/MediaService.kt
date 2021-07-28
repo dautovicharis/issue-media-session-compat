@@ -30,9 +30,7 @@ class MediaService : MediaBrowserServiceCompat() {
             PendingIntent.FLAG_IMMUTABLE
         )
 
-        val component = getMediaButtonReceiverComponent(baseContext)
-
-        mediaSession = MediaSessionCompat(baseContext, TAG, component, pendingItent).also {
+        mediaSession = MediaSessionCompat(baseContext, TAG, null, pendingItent).also {
             it.isActive = true
         }
 
@@ -61,25 +59,5 @@ class MediaService : MediaBrowserServiceCompat() {
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase)
-    }
-
-    private fun getMediaButtonReceiverComponent(context: Context): ComponentName? {
-        val queryIntent = Intent(Intent.ACTION_MEDIA_BUTTON)
-        queryIntent.setPackage(context.packageName)
-        val pm = context.packageManager
-        val resolveInfos = pm.queryBroadcastReceivers(queryIntent, 0)
-        if (resolveInfos.size == 1) {
-            val resolveInfo = resolveInfos[0]
-            return ComponentName(
-                resolveInfo.activityInfo.packageName,
-                resolveInfo.activityInfo.name
-            )
-        } else if (resolveInfos.size > 1) {
-            Log.w(
-                TAG, "More than one BroadcastReceiver that handles "
-                        + Intent.ACTION_MEDIA_BUTTON + " was found, returning null."
-            )
-        }
-        return null
     }
 }
